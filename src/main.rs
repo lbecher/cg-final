@@ -1,18 +1,25 @@
 mod app;
+mod types;
 
-use eframe::egui;
+use eframe::{Error, NativeOptions, run_native};
+use eframe::egui::{Vec2, ViewportBuilder};
+use env_logger::init as init_env_logger;
 
 use app::App;
 
-fn main() -> Result<(), eframe::Error> {
-    env_logger::init();
+fn main() -> Result<(), Error> {
+    init_env_logger();
     
-    let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default().with_inner_size([960.0, 640.0]),
+    let options = NativeOptions {
+        viewport: ViewportBuilder {
+            min_inner_size: Some(Vec2::new(600.0, 400.0)),
+            inner_size: Some(Vec2::new(960.0, 640.0)),
+            ..Default::default()
+        },
         ..Default::default()
     };
 
-    eframe::run_native(
+    run_native(
         "Modelador por Revolução",
         options,
         Box::new(|_cc| {
