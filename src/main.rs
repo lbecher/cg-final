@@ -13,7 +13,7 @@ fn main() -> Result<(), Error> {
     
     let options = NativeOptions {
         viewport: ViewportBuilder {
-            inner_size: Some(Vec2::new(960.0, 640.0)),
+            inner_size: Some(Vec2::new(960.0, 580.0)),
             resizable: Some(false),
             maximize_button: Some(false),
             minimize_button: Some(false),

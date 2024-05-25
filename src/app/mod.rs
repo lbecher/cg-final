@@ -3,7 +3,7 @@ mod menu_bar;
 mod side_panel;
 
 use eframe::{App as EframeApp, Frame};
-use eframe::egui::{CentralPanel, Color32, ColorImage, Context, Pos2, SidePanel, Stroke, TopBottomPanel};
+use eframe::egui::{CentralPanel, ColorImage, Context, Pos2, SidePanel, TopBottomPanel};
 
 use crate::app::menu_bar::menu_bar_content;
 use crate::app::side_panel::side_panel_content;
@@ -67,9 +67,9 @@ impl EframeApp for App {
             menu_bar_content(self, ui);
         });
         
-        SidePanel::right("side_panel").show(ctx,  |ui| {
-            side_panel_content(self, ui);
-        });
+        SidePanel::right("side_panel").exact_width(280.0).show(ctx,  |ui| {
+                side_panel_content(self, ui);
+            });
 
         CentralPanel::default().show(ctx, |ui| {
             central_panel_content(self, ui);
