@@ -1,4 +1,5 @@
 mod app;
+mod render;
 mod types;
 
 use eframe::{Error, NativeOptions, run_native};
@@ -12,8 +13,10 @@ fn main() -> Result<(), Error> {
     
     let options = NativeOptions {
         viewport: ViewportBuilder {
-            min_inner_size: Some(Vec2::new(600.0, 400.0)),
             inner_size: Some(Vec2::new(960.0, 640.0)),
+            resizable: Some(false),
+            maximize_button: Some(false),
+            minimize_button: Some(false),
             ..Default::default()
         },
         ..Default::default()

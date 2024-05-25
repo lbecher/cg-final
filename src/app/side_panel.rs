@@ -1,10 +1,10 @@
-use eframe::egui;
+use eframe::egui::Ui;
 
 use crate::app::App;
 
 pub fn side_panel_content(
     app: &mut App,
-    ui: &mut egui::Ui,
+    ui: &mut Ui,
 ) {
     ui.collapsing("Iluminação", |ui| {
         
