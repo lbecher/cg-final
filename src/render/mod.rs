@@ -44,16 +44,16 @@ impl Render {
         let n: Vec3 = camera.vrp - camera.p;
         let nn: Vec3 = n.normalize();
 
-        let v: Vec3 = camera.y - (nn * camera.y.dot(&nn));
+        let v: Vec3 = camera.y - (camera.y.dot(&nn) * nn);
         let vn: Vec3 = v.normalize();
 
-        let u: Vec3 = vn.cross(&nn);
+        let u: Vec3 = v.cross(&n);
         let un: Vec3 = u.normalize();
 
         let m_sru_src: Mat4 = Mat4::from_vec(vec![
-            un[0], un[1], un[2], -camera.vrp[0],
-            vn[0], vn[1], vn[2], -camera.vrp[1],
-            nn[0], nn[1], nn[2], -camera.vrp[2],
+            un[0], un[1], un[2], -un.dot(camera.vrp[0]),
+            vn[0], vn[1], vn[2], -vn.dot(camera.vrp[1]),
+            nn[0], nn[1], nn[2], -nn.dot(camera.vrp[2]),
             0.0, 0.0, 0.0, 1.0,
         ]).transpose();
 
