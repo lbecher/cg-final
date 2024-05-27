@@ -1,4 +1,4 @@
-pub mod pipeline;
+pub mod pipelines;
 
 use eframe::egui::ColorImage;
 use image::{Rgb, RgbImage};

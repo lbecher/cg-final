@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+debug_print = "1.0.0"
 eframe = "0.27.2"
 env_logger = "0.11.3"
 image = "0.25.1"
