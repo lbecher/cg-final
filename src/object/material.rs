@@ -10,9 +10,9 @@ pub struct Material {
 
 impl Default for Material {
     fn default() -> Self {
-        let ka: Vec3 = Vec3::new(0.5, 0.5, 0.5);
-        let kd: Vec3 = Vec3::new(0.5, 0.5, 0.5);
-        let ks: Vec3 = Vec3::new(0.5, 0.5, 0.5);
+        let ka: Vec3 = Vec3::new(0.4, 0.0, 0.0);
+        let kd: Vec3 = Vec3::new(0.7, 0.0, 0.0);
+        let ks: Vec3 = Vec3::new(0.5, 0.0, 0.0);
 
         let n = 2.0;
 

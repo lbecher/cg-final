@@ -28,29 +28,24 @@ pub fn face_edges(
         ab = tmp;
     }
 
-    if bc[0] != ab[0] && bc[bc.len() - 1] != ab[0] {
-        let tmp: Vec<Vec3> = bc;
-        bc = ca;
-        ca = tmp;
+    if ab[ab.len() - 1].y < ab[0].y {
+        ab.reverse();
     }
-    if bc[0] != ab[0] {
+    if bc[bc.len() - 1].y < bc[0].y {
         bc.reverse();
     }
-    if ca[0] != bc[bc.len() - 1] {
+    if ca[ca.len() - 1].y < ca[0].y {
         ca.reverse();
+    }
+
+    if bc[bc.len() - 1].y > ca[0].y {
+        let tmp: Vec<Vec3> = ca;
+        ca = bc;
+        bc = tmp;
     }
 
     bc.pop();
     bc.extend(ca);
-
-    ab.remove(0);
-    bc.remove(0);
-    ab.pop();
-    bc.pop();
-
-    /*for i in 0..ab.len() {
-        println!("{:?} {:?}", ab[i], bc[i]);
-    }*/
 
     (ab, bc)
 }

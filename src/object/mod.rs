@@ -24,7 +24,7 @@ impl Default for Object {
         ]));
 
         faces.push(Face::new([
-            Vec3::new(85.0, 192.0, -22.0),
+            Vec3::new(198.0, 241.0, -22.0),
             Vec3::new(93.0, 251.0, -22.0),
             Vec3::new(125.0, 107.0, -22.0),
         ]));

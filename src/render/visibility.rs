@@ -30,7 +30,7 @@ fn calculate_visibility(
 
     let dot = on.dot(&nn);
 
-    //debug_println!("{}", dot);
+    debug_println!("{}", dot);
 
     dot > 0.0
 }

@@ -41,16 +41,7 @@ pub struct App {
 impl Default for App {
     fn default() -> Self {
         let mut objects = Vec::new();
-
-        objects.push(Object::new(
-            4,
-            vec![
-                Vec3::new(0.0, 0.0, 0.0),
-                Vec3::new(0.0, 30.0, 0.0),
-                Vec3::new(30.0, 30.0, 0.0),
-                Vec3::new(30.0, 0.0, 0.0),
-            ],
-        ));
+        objects.push(Object::default());
 
         let camera = Camera::default();
         let lighting = Lighting::default();

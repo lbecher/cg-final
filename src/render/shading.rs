@@ -20,13 +20,15 @@ fn calculate_color(
         let ia = lighting.ila[i] * material.ka[i];
         it += ia;
 
-        let dot = nn.dot(&lighting.l);
+        let ln: Vec3 = lighting.l.normalize();
+
+        let dot = nn.dot(&ln);
         if dot > 0.0 {
             let id = lighting.il[i] * material.kd[i] * dot;
             it += id;
         }
 
-        let r: Vec3 = ((2.0 * lighting.l.dot(nn)) * nn) - lighting.l;
+        let r: Vec3 = ((2.0 * ln.dot(nn)) * nn) - ln;
         let dot = r.dot(&sn);
         if dot > 0.0 {
             let is = lighting.il[i] * material.ks[i] * (dot.powf(material.n));
