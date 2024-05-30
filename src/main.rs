@@ -1,5 +1,9 @@
 mod app;
+mod camera;
+mod lighting;
+mod object;
 mod render;
+mod test;
 mod types;
 
 use eframe::{Error, NativeOptions, run_native};
@@ -8,33 +12,7 @@ use env_logger::init as init_env_logger;
 
 use app::App;
 
-
-// coisas de teste ------------------------
-
-fn coisas_de_teste() {
-    use crate::types::Vec3;
-    use crate::render::pipelines::perspective_view_pipeline;
-    use crate::render::Camera;
-
-    let cam = Camera {
-        dp: 40.0,
-        vrp: Vec3::new(25.0, 15.0, 80.0),
-        p: Vec3::new(20.0, 10.0, 25.0),
-        y: Vec3::new(0.0, 1.0, 0.0),
-
-        xmin: -8.0,
-        xmax: 8.0,
-        ymin: -6.0,
-        ymax: 6.0,
-    };
-    
-    perspective_view_pipeline(&cam, 320.0, 240.0);
-}
-
-// coisas de teste ------------------------
-
 fn main() -> Result<(), Error> {
-    coisas_de_teste();
 
     init_env_logger();
     

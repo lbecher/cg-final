@@ -8,7 +8,11 @@ use eframe::egui::{CentralPanel, ColorImage, Context, Pos2, SidePanel, TopBottom
 use crate::app::menu_bar::menu_bar_content;
 use crate::app::side_panel::side_panel_content;
 use crate::app::central_panel::central_panel_content;
+use crate::camera::Camera;
+use crate::lighting::Lighting;
+use crate::object::Object;
 use crate::render::Render;
+use crate::types::Vec3;
 
 #[derive(Debug, Clone)]
 pub enum ParallelViewType {
@@ -18,6 +22,11 @@ pub enum ParallelViewType {
 }
 
 pub struct App {
+    objects: Vec<Object>,
+
+    camera: Camera,
+    lighting: Lighting,
+    
     image: ColorImage,
     redraw: bool,
     render: Option<Render>,
@@ -31,6 +40,21 @@ pub struct App {
 
 impl Default for App {
     fn default() -> Self {
+        let mut objects = Vec::new();
+
+        objects.push(Object::new(
+            4,
+            vec![
+                Vec3::new(0.0, 0.0, 0.0),
+                Vec3::new(0.0, 30.0, 0.0),
+                Vec3::new(30.0, 30.0, 0.0),
+                Vec3::new(30.0, 0.0, 0.0),
+            ],
+        ));
+
+        let camera = Camera::default();
+        let lighting = Lighting::default();
+
         let image = ColorImage::example();
         let redraw = true;
         let render = None;
@@ -44,6 +68,11 @@ impl Default for App {
         
 
         Self {
+            objects,
+
+            camera,
+            lighting,
+
             image,
             redraw,
             render,

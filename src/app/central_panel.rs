@@ -29,7 +29,11 @@ pub fn central_panel_content(
         }
         
         if let Some(render) = &mut app.render {
-            app.image = render.redraw();
+            app.image = render.redraw(
+                &app.camera,
+                &app.lighting,
+                &app.objects,
+            );
             app.redraw = false;
         }
     }
