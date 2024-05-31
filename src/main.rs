@@ -1,5 +1,6 @@
 mod app;
 mod camera;
+mod constants;
 mod lighting;
 mod object;
 mod render;

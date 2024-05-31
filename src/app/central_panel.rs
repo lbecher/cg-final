@@ -33,6 +33,9 @@ pub fn central_panel_content(
                 &app.camera,
                 &app.lighting,
                 &app.objects,
+                app.perspective_view,
+                app.image.width() as u32,
+                app.image.height() as u32,
             );
             app.redraw = false;
         }

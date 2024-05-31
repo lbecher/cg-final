@@ -91,7 +91,12 @@ pub fn constant(
         for x in x0 as i32..x1 as i32 {
 
             if x >= 0 && x < width && y >= 0 && y < height {
-                let index = (x as usize * width as usize) + y as usize;
+                let index = (y as usize * width as usize) + x as usize;
+
+                if index >= zbuffer.len() {
+                    println!("w: {}, h: {}", width, height);
+                    println!("x: {}, y: {}, len: {}", x, y, zbuffer.len());
+                }
 
                 if z < zbuffer[index] {
                     let pixel = image.get_pixel_mut(x as u32, y as u32);

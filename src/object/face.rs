@@ -26,6 +26,18 @@ impl Face {
         }
     }
 
+    pub fn update(&mut self) {
+        let b: Vec3 = self.vertices[1];
+
+        let ba: Vec3 = self.vertices[0] - b;
+        let bc: Vec3 = self.vertices[2] - b;
+
+        self.cent = b + (0.5 * ba) + (0.5 * bc);
+
+        let n: Vec3 = bc.cross(&ba);
+        self.nn = n.normalize();
+    }
+
     pub fn get_nn(&self) -> Vec3 {
         self.nn.clone()
     }
@@ -36,5 +48,9 @@ impl Face {
 
     pub fn get_vertices(&self) -> [Vec3; 3] {
         self.vertices.clone()
+    }
+
+    pub fn set_vertices(&mut self, vertices: [Vec3; 3]) {
+        self.vertices = vertices;
     }
 }

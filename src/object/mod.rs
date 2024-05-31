@@ -17,16 +17,34 @@ impl Default for Object {
     fn default() -> Self {
         let mut faces: Vec<Face> = Vec::new();
 
+        let a: Vec3 = Vec3::new(21.2, 0.7, 42.3);
+        let b: Vec3 = Vec3::new(34.0, 3.4, 27.2);
+        let c: Vec3 = Vec3::new(18.8, 5.6, 14.6);
+        let d: Vec3 = Vec3::new(5.9, 2.9, 29.0);
+        let e: Vec3 = Vec3::new(20.0, 20.9, 31.6);
+
         faces.push(Face::new([
-            Vec3::new(93.0, 251.0, -22.0),
-            Vec3::new(198.0, 241.0, -22.0),
-            Vec3::new(125.0, 107.0, -22.0),
+            a.clone(),
+            b.clone(),
+            e.clone(),
         ]));
 
         faces.push(Face::new([
-            Vec3::new(198.0, 241.0, -22.0),
-            Vec3::new(93.0, 251.0, -22.0),
-            Vec3::new(125.0, 107.0, -22.0),
+            b.clone(),
+            c.clone(),
+            e.clone(),
+        ]));
+
+        faces.push(Face::new([
+            c.clone(),
+            d.clone(),
+            e.clone(),
+        ]));
+
+        faces.push(Face::new([
+            d.clone(),
+            a.clone(),
+            e.clone(),
         ]));
 
         let material = Material::default();
