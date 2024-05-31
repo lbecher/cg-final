@@ -1,28 +1,27 @@
 pub mod edges;
 pub mod pipelines;
 pub mod shading;
+pub mod transform;
 pub mod visibility;
 
 use eframe::egui::ColorImage;
 use image::{Rgb, RgbImage};
 
-use crate::camera::{self, Camera};
+use crate::camera::Camera;
 use crate::lighting::Lighting;
-use crate::object::face::Face;
-use crate::object::{face, Object};
+use crate::app::{RenderType, View};
+use crate::object::Object;
 use crate::render::pipelines::{axonometric_view_pipeline, perspective_view_pipeline};
 use crate::render::shading::constant;
-use crate::render::visibility::filter_faces;
-use crate::types::{
-    mat4x1_to_vec3, vec3_to_mat4x1, Mat, Mat4, Mat4x1, Vec3
-};
+use crate::types::{Mat, Mat4};
+use crate::render::transform::transform_positions;
 
 pub struct Render {
     clear_color: [u8; 3],
     image: RgbImage,
     zbuffer: Mat,
     
-    m_sru_srt: Mat4,
+    pub m_sru_srt: Mat4,
 }
 
 impl Render {
@@ -56,56 +55,44 @@ impl Render {
         camera: &Camera,
         lighting: &Lighting,
         objects: &Vec<Object>,
-        perspective_view: bool,
+        view: View,
+        render_type: RenderType,
         width: u32,
         height: u32,
     ) -> ColorImage {
         self.clean();
 
-        if perspective_view {
+        if view == View::Perspective {
             self.m_sru_srt = perspective_view_pipeline(camera, width as f32, height as f32);
         } else {
             self.m_sru_srt = axonometric_view_pipeline(camera, width as f32, height as f32);
         }
 
         for object in objects.iter() {
-            let mut faces = object.get_faces();
-            faces = filter_faces(&faces, &camera.vrp);
+            let faces = transform_positions(&self.m_sru_srt, &object.get_faces(), camera, view.clone());
 
             for face in faces.iter() {
-                let mut face = face.clone();
-                face.set_vertices(self.apply_m_sru_srt(&face.get_vertices()));
-                constant(
-                    &face,
-                    &camera.vrp,
-                    lighting,
-                    &object.get_material(),
-                    &mut self.zbuffer,
-                    &mut self.image,
-                );
+                match render_type {
+                    RenderType::Constant => {
+                        constant(
+                            &face,
+                            &camera.vrp,
+                            lighting,
+                            &object.get_material(),
+                            &mut self.zbuffer,
+                            &mut self.image,
+                        );
+                    }
+                    _ => {}
+                }
             }
         }
-                
+
         self.egui_image()
     }
 
     pub fn set_clear_color(&mut self, clear_color: [u8; 3]) {
         self.clear_color = clear_color;
-    }
-
-    fn apply_m_sru_srt(
-        &self,
-        face: &[Vec3; 3],
-    ) -> [Vec3; 3] {
-        let a: Mat4x1 = self.m_sru_srt * vec3_to_mat4x1(&face[0]);
-        let b: Mat4x1 = self.m_sru_srt * vec3_to_mat4x1(&face[1]);
-        let c: Mat4x1 = self.m_sru_srt * vec3_to_mat4x1(&face[2]);
-
-        let a: Vec3 = mat4x1_to_vec3(&a);
-        let b: Vec3 = mat4x1_to_vec3(&b);
-        let c: Vec3 = mat4x1_to_vec3(&c);
-
-        [a, b, c]
     }
 
     fn clean(&mut self) {

@@ -93,11 +93,6 @@ pub fn constant(
             if x >= 0 && x < width && y >= 0 && y < height {
                 let index = (y as usize * width as usize) + x as usize;
 
-                if index >= zbuffer.len() {
-                    println!("w: {}, h: {}", width, height);
-                    println!("x: {}, y: {}, len: {}", x, y, zbuffer.len());
-                }
-
                 if z < zbuffer[index] {
                     let pixel = image.get_pixel_mut(x as u32, y as u32);
 
@@ -114,10 +109,16 @@ pub fn constant(
     }
 }
 
+/*
 pub fn gouraud(
-    zbuffer: &Mat,
+    face: &Face,
+    vrp: &Vec3,
+    lighting: &Lighting,
+    material: &Material,
+    zbuffer: &mut Mat,
+    image: &mut RgbImage,
 ) {
-
+    
 }
 
 pub fn phong(
@@ -125,3 +126,4 @@ pub fn phong(
 ) {
 
 }
+*/

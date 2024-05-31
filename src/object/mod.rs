@@ -1,16 +1,15 @@
 pub mod face;
 pub mod material;
-pub mod vertex;
 
 use std::f32::consts::PI;
 
 use crate::object::face::Face;
 use crate::object::material::Material;
-use crate::types::Vec3;
+use crate::types::{mat4x1_to_vec3, vec3_to_mat4x1, Mat4, Mat4x1, Vec3};
 
 pub struct Object {
     faces: Vec<Face>,
-    material: Material,
+    pub material: Material,
 }
 
 impl Default for Object {
@@ -57,7 +56,7 @@ impl Default for Object {
 }
 
 impl Object {
-    pub fn new(
+    pub fn _new(
         segments: u32,
         perfil: Vec<Vec3>,
     ) -> Self {
@@ -156,5 +155,266 @@ impl Object {
 
     pub fn get_material(&self) -> Material {
         self.material.clone()
+    }
+
+    pub fn get_cent(&self) -> Vec3 {
+        let mut x: f32 = 0.0;
+        let mut y: f32 = 0.0;
+        let mut z: f32 = 0.0;
+
+        for face in self.faces.iter() {
+            let vertices: [Vec3; 3] = face.get_vertices();
+
+            x += vertices[0].x + vertices[1].x + vertices[2].x;
+            y += vertices[0].y + vertices[1].y + vertices[2].y;
+            z += vertices[0].z + vertices[1].z + vertices[2].z;
+        }
+
+        let n: f32 = self.faces.len() as f32 * 3.0;
+
+        Vec3::new(x / n, y / n, z / n)
+    }
+
+    fn gen_x_rotation_matriz(&self,  rotation: f32) -> Mat4 {
+        let rotation = (rotation * PI) / 180.0;
+        Mat4::new(
+            1.0, 0.0, 0.0, 0.0,
+            0.0, rotation.cos(), -rotation.sin(), 0.0,
+            0.0, rotation.sin(), rotation.cos(), 0.0,
+            0.0, 0.0, 0.0, 1.0,
+        )
+    }
+    
+    fn gen_y_rotation_matriz(&self, rotation: f32) -> Mat4 {
+        let rotation = (rotation * PI) / 180.0;
+        Mat4::new(
+            rotation.cos(), 0.0, rotation.sin(), 0.0,
+            0.0, 1.0, 0.0, 0.0,
+            -rotation.sin(), 0.0, rotation.cos(), 0.0,
+            0.0, 0.0, 0.0, 1.0,
+        )
+    }
+    
+    fn gen_z_rotation_matriz(&self, rotation: f32) -> Mat4 {
+        let rotation = (rotation * PI) / 180.0;
+        Mat4::new(
+            rotation.cos(), -rotation.sin(), 0.0, 0.0,
+            rotation.sin(), rotation.cos(), 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            0.0, 0.0, 0.0, 1.0,
+        )
+    }
+
+    fn gen_scaling_matriz(&self, scale: f32) -> Mat4 {
+        Mat4::new(
+            scale, 0.0, 0.0, 0.0,
+            0.0, scale, 0.0, 0.0,
+            0.0, 0.0, scale, 0.0,
+            0.0, 0.0, 0.0, 1.0,
+        )
+    }
+
+    fn gen_translation_matriz(&self, position: Vec3) -> Mat4 {
+        Mat4::new(
+            1.0, 0.0, 0.0, position.x,
+            0.0, 1.0, 0.0, position.y,
+            0.0, 0.0, 1.0, position.z,
+            0.0, 0.0, 0.0, 1.0,
+        )
+    }
+
+    pub fn scale(
+        &mut self,
+        factor: f32,
+    ) {
+        let cent: Vec3 = self.get_cent();
+
+        let t: Mat4 = self.gen_translation_matriz(-cent.clone());
+
+        for face in self.faces.iter_mut() {
+            let mut vertices: [Vec3; 3] = face.get_vertices();
+            for vertex in vertices.iter_mut() {
+                let v: Mat4x1 = t * vec3_to_mat4x1(&vertex);
+                *vertex = mat4x1_to_vec3(&v);
+            }
+            face.set_vertices(vertices);
+        }
+
+        let s: Mat4 = self.gen_scaling_matriz(factor);
+
+        for face in self.faces.iter_mut() {
+            let mut vertices: [Vec3; 3] = face.get_vertices();
+            for vertex in vertices.iter_mut() {
+                let v: Mat4x1 = s * vec3_to_mat4x1(&vertex);
+                *vertex = mat4x1_to_vec3(&v);
+            }
+            face.set_vertices(vertices);
+        }
+
+        let t: Mat4 = self.gen_translation_matriz(cent);
+
+        for face in self.faces.iter_mut() {
+            let mut vertices: [Vec3; 3] = face.get_vertices();
+            for vertex in vertices.iter_mut() {
+                let v: Mat4x1 = t * vec3_to_mat4x1(&vertex);
+                *vertex = mat4x1_to_vec3(&v);
+            }
+            face.set_vertices(vertices);
+            face.update();
+        }
+    }
+
+    pub fn rotate_x(
+        &mut self,
+        rotation: f32,
+    ) {
+        let cent: Vec3 = self.get_cent();
+
+        let t: Mat4 = self.gen_translation_matriz(-cent.clone());
+
+        for face in self.faces.iter_mut() {
+            let mut vertices: [Vec3; 3] = face.get_vertices();
+            for vertex in vertices.iter_mut() {
+                let v: Mat4x1 = t * vec3_to_mat4x1(&vertex);
+                *vertex = mat4x1_to_vec3(&v);
+            }
+            face.set_vertices(vertices);
+        }
+
+        let r: Mat4 = self.gen_x_rotation_matriz(rotation);
+
+        for face in self.faces.iter_mut() {
+            let mut vertices: [Vec3; 3] = face.get_vertices();
+            for vertex in vertices.iter_mut() {
+                let v: Mat4x1 = r * vec3_to_mat4x1(&vertex);
+                *vertex = mat4x1_to_vec3(&v);
+            }
+            face.set_vertices(vertices);
+        }
+
+        let t: Mat4 = self.gen_translation_matriz(cent);
+
+        for face in self.faces.iter_mut() {
+            let mut vertices: [Vec3; 3] = face.get_vertices();
+            for vertex in vertices.iter_mut() {
+                let v: Mat4x1 = t * vec3_to_mat4x1(&vertex);
+                *vertex = mat4x1_to_vec3(&v);
+            }
+            face.set_vertices(vertices);
+            face.update();
+        }
+    }
+
+    pub fn rotate_y(
+        &mut self,
+        rotation: f32,
+    ) {
+        let cent: Vec3 = self.get_cent();
+
+        let t: Mat4 = self.gen_translation_matriz(-cent.clone());
+
+        for face in self.faces.iter_mut() {
+            let mut vertices: [Vec3; 3] = face.get_vertices();
+            for vertex in vertices.iter_mut() {
+                let v: Mat4x1 = t * vec3_to_mat4x1(&vertex);
+                *vertex = mat4x1_to_vec3(&v);
+            }
+            face.set_vertices(vertices);
+        }
+
+        let r: Mat4 = self.gen_y_rotation_matriz(rotation);
+
+        for face in self.faces.iter_mut() {
+            let mut vertices: [Vec3; 3] = face.get_vertices();
+            for vertex in vertices.iter_mut() {
+                let v: Mat4x1 = r * vec3_to_mat4x1(&vertex);
+                *vertex = mat4x1_to_vec3(&v);
+            }
+            face.set_vertices(vertices);
+        }
+
+        let t: Mat4 = self.gen_translation_matriz(cent);
+
+        for face in self.faces.iter_mut() {
+            let mut vertices: [Vec3; 3] = face.get_vertices();
+            for vertex in vertices.iter_mut() {
+                let v: Mat4x1 = t * vec3_to_mat4x1(&vertex);
+                *vertex = mat4x1_to_vec3(&v);
+            }
+            face.set_vertices(vertices);
+            face.update();
+        }
+    }
+
+    pub fn rotate_z(
+        &mut self,
+        rotation: f32,
+    ) {
+        let cent: Vec3 = self.get_cent();
+
+        let t: Mat4 = self.gen_translation_matriz(-cent.clone());
+
+        for face in self.faces.iter_mut() {
+            let mut vertices: [Vec3; 3] = face.get_vertices();
+            for vertex in vertices.iter_mut() {
+                let v: Mat4x1 = t * vec3_to_mat4x1(&vertex);
+                *vertex = mat4x1_to_vec3(&v);
+            }
+            face.set_vertices(vertices);
+        }
+
+        let r: Mat4 = self.gen_z_rotation_matriz(rotation);
+
+        for face in self.faces.iter_mut() {
+            let mut vertices: [Vec3; 3] = face.get_vertices();
+            for vertex in vertices.iter_mut() {
+                let v: Mat4x1 = r * vec3_to_mat4x1(&vertex);
+                *vertex = mat4x1_to_vec3(&v);
+            }
+            face.set_vertices(vertices);
+        }
+
+        let t: Mat4 = self.gen_translation_matriz(cent);
+
+        for face in self.faces.iter_mut() {
+            let mut vertices: [Vec3; 3] = face.get_vertices();
+            for vertex in vertices.iter_mut() {
+                let v: Mat4x1 = t * vec3_to_mat4x1(&vertex);
+                *vertex = mat4x1_to_vec3(&v);
+            }
+            face.set_vertices(vertices);
+            face.update();
+        }
+    }
+
+    pub fn translate(
+        &mut self,
+        position: Vec3,
+    ) {
+        let t: Mat4 = self.gen_translation_matriz(position);
+
+        for face in self.faces.iter_mut() {
+            let mut vertices: [Vec3; 3] = face.get_vertices();
+            for vertex in vertices.iter_mut() {
+                let v: Mat4x1 = t * vec3_to_mat4x1(&vertex);
+                *vertex = mat4x1_to_vec3(&v);
+            }
+            face.set_vertices(vertices);
+            face.update();
+        }
+    }
+
+    pub fn _get_vertex_nn(&self, vertex: &Vec3) -> Vec3 {
+        let mut nn: Vec3 = Vec3::new(0.0, 0.0, 0.0);
+
+        for face in self.faces.iter() {
+            let vertices: [Vec3; 3] = face.get_vertices();
+
+            if vertices.contains(vertex) {
+                nn += face.get_nn();
+            }
+        }
+
+        nn.normalize()
     }
 }

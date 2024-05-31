@@ -12,13 +12,21 @@ use crate::camera::Camera;
 use crate::lighting::Lighting;
 use crate::object::Object;
 use crate::render::Render;
-use crate::types::Vec3;
 
-#[derive(Debug, Clone)]
-pub enum ParallelViewType {
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum View {
     Front,
     Side,
     Top,
+    Perspective,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RenderType {
+    Wireframe,
+    Constant,
+    Gouraud,
+    Phong,
 }
 
 #[derive(Default)]
@@ -40,6 +48,24 @@ pub struct TextEditStrings {
     pub lighting_l_x: String,
     pub lighting_l_y: String,
     pub lighting_l_z: String,
+
+    pub object_scale: String,
+    pub object_rotate_x: String,
+    pub object_rotate_y: String,
+    pub object_rotate_z: String,
+    pub object_translate_x: String,
+    pub object_translate_y: String,
+    pub object_translate_z: String,
+    pub object_material_ka_r: String,
+    pub object_material_ka_g: String,
+    pub object_material_ka_b: String,
+    pub object_material_kd_r: String,
+    pub object_material_kd_g: String,
+    pub object_material_kd_b: String,
+    pub object_material_ks_r: String,
+    pub object_material_ks_g: String,
+    pub object_material_ks_b: String,
+    pub object_material_n: String,
 }
 
 pub struct App {
@@ -48,12 +74,12 @@ pub struct App {
     camera: Camera,
     lighting: Lighting,
     
+    view: View,
     image: ColorImage,
     redraw: bool,
     render: Option<Render>,
 
-    perspective_view: bool,
-    parallel_view_type: ParallelViewType,
+    render_type: RenderType,
     selected_object: Option<usize>,
 
     control_points: Vec<Pos2>,
@@ -72,9 +98,8 @@ impl Default for App {
         let redraw = true;
         let render = None;
 
-        let perspective_view = false;
-        let parallel_view_type = ParallelViewType::Front;
-        
+        let view = View::Perspective;
+        let render_type = RenderType::Constant;
         let selected_object = Some(0);
         
         let control_points = Vec::new();
@@ -105,12 +130,12 @@ impl Default for App {
             camera,
             lighting,
 
+            view,
             image,
             redraw,
             render,
 
-            perspective_view,
-            parallel_view_type,
+            render_type,
             selected_object,
 
             control_points,
@@ -130,8 +155,8 @@ impl EframeApp for App {
         });
         
         SidePanel::right("side_panel").exact_width(280.0).show(ctx,  |ui| {
-                side_panel_content(self, ui);
-            });
+            side_panel_content(self, ui);
+        });
 
         CentralPanel::default().show(ctx, |ui| {
             central_panel_content(self, ui);
